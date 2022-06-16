@@ -2,8 +2,8 @@ import Travel from '../models/travels.js'
 
 export const get_AllTravels =async(req, res)=>
 {
-    travels = await Travel.find({})
-    if(!travels)
+    const travels = await Travel.find({})
+    if(travels.length === 0)
     {
         return res.status(404).send({
             message:"No travels found"
@@ -17,7 +17,7 @@ export const get_AllTravels =async(req, res)=>
 
 export const get_Travel = async(req, res)=>
 {
-    const travel = await Travel.findById(req.params.id)
+    const travel = await Travel.findById(req.params.id).populate('bus')
     if(!travel){
         return res.status(404).send({
             message:"Travel not found"
@@ -59,7 +59,7 @@ export const buy_Travel = async (req, res) => {
 
     try{
         const {origin,destination,price,date,bus_id,user_id} = req.body
-        const travel_Avalaible = await Travel.findOne({origin:origin,destination:destination,price:price,date:date,bus_id:bus_id,full:false}).populate('users')
+        const travel_Avalaible = await Travel.findOne({origin:origin,destination:destination,price:price,date:date,_id:bus_id,full:false}).populate('users')
         if(!travel_Avalaible || travel_Avalaible.users.length < travel_Avalaible.capacity_of)
         {
             return res.status(404).send({message:"Travel not available"})

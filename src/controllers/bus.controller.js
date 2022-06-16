@@ -49,4 +49,9 @@ export const delete_Bus=async(req,res)=>{
     {
         return res.status(404).send("No bus found");
     }
+    res.status(204).send({
+        message: "Bus deleted"
+    });
 }
+
+

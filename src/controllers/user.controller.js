@@ -1,5 +1,6 @@
 
 import User  from '../models/user.js'
+import bcrypt from 'bcrypt'
 
 export const get_AllUsers =async(req,res)=>{
     const users = await User.find({})
@@ -33,12 +34,18 @@ export const get_User= async(req,res)=>
 
 export const post_User = async (req,res)=>{
 try{
-    user = new User(req.body)
+   
+   const generatedSalt = await bcrypt.genSalt(10)
+
+   const user = new User(req.body)
+    
     if(!user){
         return res.status(400).send({
-            message:"invalid user"
+            message:"invalid user or user already exists"
         })
+    console.log(user)
     }
+    user.password = await bcrypt.hash(user.password,generatedSalt)
     await user.save()
     res.json(user)
    
